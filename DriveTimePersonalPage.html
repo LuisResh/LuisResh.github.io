@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Weather Map</title>
+
+<!-- Start Mobile Optimization -->
+<meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- End Mobile Optimization -->
+
+	
+<!-- *******************DO NOT REMOVE***************** -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ=="crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg=="crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-easybutton@2.0.0/src/easy-button.css">
+<script src="https://unpkg.com/leaflet-easybutton@2.0.0/src/easy-button.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.css' rel='stylesheet' />
+<script src="https://unpkg.com/esri-leaflet@2.1.1/dist/esri-leaflet.js"
+    integrity="sha512-ECQqaYZke9cSdqlFG08zSkudgrdF6I1d8ViSa7I3VIszJyVqw4ng1G8sehEXlumdMnFYfzY0tMgdQa4WCs9IUw=="
+    crossorigin=""></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://releases.route360.net/r360-js/latest.js"></script>
+<!-- *******************DO NOT REMOVE***************** -->
+
+<link rel="stylesheet" href="css/leaflet-control-credits.css" />
+<script type="text/javascript" src="scripts/leaflet-control-credits.js"></script>
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+  <script src="https://releases.route360.net/r360-js/latest.js"></script>
+  <script src="https://releases.route360.net/r360-angular/latest.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.9/angular-material.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.9/angular-material.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular-animate.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular-aria.js"></script>
+
+<style>
+#top, #bottom, #left, #right {
+	background: #252626;
+	position: absolute;
+	}
+	#left, #right {
+		top: 0; bottom: 0;
+		width: 6px;
+		}
+		#left { left: 0; }
+		#right { right: 0; }
+		
+	#top, #bottom {
+		left: 0; right: 0;
+		height: 6px;
+		}
+		#top { top: 0; }
+		#bottom { bottom: 0; }
+	#basemaps-wrapper {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		z-index: 400;
+		background: white;
+		padding: 10px;
+		}
+	#basemaps {
+		margin-bottom: 5px;
+		}
+    .controls { position: absolute; bottom: 40px; left: 0px; right: 0px; z-index: 1000}
+    r360-rainbow { width: 420px; margin: auto; }
+    r360-rainbow label {
+      display: inline-block;
+      font-size: 13px;
+      margin: 0;
+      padding: .5rem 0;
+      text-align: center;
+      color: rgba(255,255,255,.8);
+    }
+</style>
+</head>
+<body>
+
+<div id="map" style="width: 1265px; height: 917px"></div>
+<div id="left"></div>
+<div id="right"></div>
+<div id="top"></div>
+<div id="bottom"></div>
+<div ng-app="RainbowExample" ng-controller="RainbowExampleController as vm" class="controls" ng-cloak="" layout="column" layout-align="start end">
+ <r360-rainbow travel-time="vm.rainbowConf.travelTime" travel-time-range="vm.rainbowConf.range" color-range="vm.rainbowConf.colorRange">
+ </r360-rainbow>
+</div>
+
+<script>
+
+
+// Create variable to hold map element, give initial settings to map
+// initialize map
+var map = L.map('map').setView([39.306675, -76.621742], 12);
+		map.options.minZoom = 6;
+		map.options.maxZoom = 20;
+	
+
+
+L.control.fullscreen().addTo(map);
+
+    angular.module('RainbowExample', ['ngMaterial', 'ng360'])
+      .controller("RainbowExampleController", function() {
+
+        var vm = this;
+        vm.rainbowConf = {
+            range: { times: [10, 20, 30] },
+            travelTime: 30,
+            colorRange: {
+                "name": "Colorblind",
+                "id": 1,
+                "colors": ["#142b66", "#9527BC", "#DF2A5C"],
+                "opacities": [1, 1, 1, 1, 1, 1]
+            }
+        };
+
+        // define a pair of coordinates, where the map should be centered
+        // and should serve a the source for polygonization
+        var latlon = [52.51, 13.37];
+
+        // add the map and set the initial center to berlin
+        var map = L.map('map').setView(latlon, 14);
+        map.attributionControl.addAttribution("ÖPNV Daten © <a href='https://www.vbb.de/de/index.html' target='_blank'>VBB</a>");
+        
+        // initialise the base map
+        r360.basemap({ style: 'basic', apikey: '777WK6XPBUVO0KQZU8KPLOL' }).addTo(map);
+
+        // create the marker and add it to the map
+        var marker = L.marker(latlon, { 'draggable': true }).addTo(map);
+
+        // create the layer to add the polygons
+        var polygonLayer = r360.leafletPolygonLayer().addTo(map);
+        polygonLayer.setColors([
+          { 'time':  600, 'opacity': 0.4, 'color': '#142b66' },
+          { 'time': 1200, 'opacity': 0.4, 'color': '#9527BC' },
+          { 'time': 1800, 'opacity': 0.4, 'color': '#DF2A5C' },
+        ]);
+
+        var showPolygons = function() {
+            // you need to define some options for the polygon service
+            // for more travel options check out the other tutorials
+            var travelOptions = r360.travelOptions();
+            // please contact us and request your own key
+            travelOptions.setServiceKey('777WK6XPBUVO0KQZU8KPLOL');
+            // set the service url for your area
+            travelOptions.setServiceUrl('https://service.route360.net/germany/');
+            // we only have one source which is the marker we just added
+            travelOptions.addSource(marker);
+            // we want to have polygons for 5 to 30 minutes
+            travelOptions.setTravelTimes([600, 1200, 1800]);
+            // go by foot
+            travelOptions.setTravelType('walk');
+
+            // call the r360°- service
+            r360.PolygonService.getTravelTimePolygons(travelOptions, function(polygons) {
+                // add the returned polygons to the polygon layer
+                // and zoom the map to fit the polygons perfectly
+                polygonLayer.clearAndAddLayers(polygons, true);
+            });
+        }
+
+        showPolygons();
+        marker.on('dragend', showPolygons);
+    });
+
+//Credits
+var credctrl = L.controlCredits({
+	position: "bottomleft",
+    image: "J:\Web Mapping\ionicons-2.0.1\png\512\android-earth.png",
+    link: "http://www.roads.maryland.gov/Index.aspx?PageId=114",
+    text: "Back to HomePage</br><center> Luis Resh</center>"
+}).addTo(map);
+
+
+</script>
+<!-- Add the Leaflet JavaScript library -->
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+</body>
+</html>

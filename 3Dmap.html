@@ -1,0 +1,214 @@
+<html style=""><head>
+  <title>3D Project Map</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta property="title" content="OSM Buildings">
+  <meta property="description" content="OSM Buildings - We serve urban data.">
+  <meta property="keywords" content="OSM Buildings, OSMBuildings, OSM-Buildings, 3D Buildings, Extruded Buildings, Building Geometry, 3D Massing, OSM-3D, 3D, VR, Virtual Reality, DEM, Elevation Model, LIDAR, Point Cloud, Building, Buildings, CityGML, City model, Virtual city models, Leaflet, LeafletJS, Leaflet.js, OpenLayers, Jan Marsch, Berlin, Map, Maps, Mapbox, Mapbox GL, Vector Tiles, Cesium, CartoDB, CARTO, Mapzen, Perspective, Polygons, OSM, OpenStreetMap, JS, JavaScript, Library, WebGL, Example, Examples, Indoor, Layer, BuildingLayer, BuildingsLayer, Footprint, Coordinates, Geometry, JSON, GeoJSON, Height, Extract, node, nodeJS, node.js, PostGIS, Geo, GPS, GIS, Visualization, Latitude, Longitude, Mercator, Projection, Panning, Zooming, API">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/png" href="J:\Web Mapping\ionicons-2.0.1\png\512\earth.png">
+  <link href="https://cdn.osmbuildings.org/mapbox-gl/0.40.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://cdn.osmbuildings.org/mapbox-gl/0.40.0/mapbox-gl.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 100%;
+    }
+	#top, #bottom, #left, #right {
+	background: #252626;
+	position: absolute;
+	}
+	#left, #right {
+		top: 0; bottom: 0;
+		width: 6px;
+		}
+		#left { left: 0; }
+		#right { right: 0; }
+		
+	#top, #bottom {
+		left: 0; right: 0;
+		height: 6px;
+		}
+		#top { top: 0; }
+		#bottom { bottom: 0; }
+
+		.info {
+			background-color:#ffffff;
+			-moz-border-radius:34px;
+			-webkit-border-radius:34px;
+			border-radius:34px;
+			border:3px solid #adadad;
+			display:inline-block;
+			cursor:pointer;
+			color:#000000;
+			font-family:Times New Roman;
+			font-size:20px;
+			font-style:italic;
+			padding:8px 16px;
+			text-decoration:none;
+			text-shadow:0px 0px 0px #0e3309;
+		}
+		.info:hover {
+			background-color:#ffffff;
+		}
+		.info:active {
+			position:relative;
+			top:0px;
+		}
+
+		#help {
+			position: absolute;
+            background-color: white;
+			border:2px solid gray;
+			color: black;
+			padding: 3px 15px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			top: 1.5%;
+			right: 50px;
+			z-index: 2;
+        }
+		/* The Modal (background) */
+		.modal {
+			display: none; /* Hidden by default */
+			position: fixed; /* Stay in place */
+			z-index: 1; /* Sit on top */
+			padding-top: 100px; /* Location of the box */
+			left: 0;
+			top: 0;
+			width: 100%; /* Full width */
+			height: 100%; /* Full height */
+			overflow: auto; /* Enable scroll if needed */
+			background-color: rgb(0,0,0); /* Fallback color */
+			background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+		}
+
+		/* Modal Content */
+		.modal-content {
+			position: relative;
+			background-color: #fefefe;
+			margin: auto;
+			padding: 0;
+			border: 1px solid #888;
+			width: 80%;
+			box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+			-webkit-animation-name: animatetop;
+			-webkit-animation-duration: 0.4s;
+			animation-name: animatetop;
+			animation-duration: 0.4s
+		}
+
+		/* Add Animation */
+		@-webkit-keyframes animatetop {
+			from {top:-300px; opacity:0} 
+			to {top:0; opacity:1}
+		}
+
+		@keyframes animatetop {
+			from {top:-300px; opacity:0}
+			to {top:0; opacity:1}
+		}
+
+		/* The Close Button */
+		.close {
+			color: white;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: #000;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+		.modal-header {
+			padding: 2px 16px;
+			background-color: #D7A41C;
+			color: white;
+		}
+
+		.modal-body {padding: 2px 16px;}
+
+  </style>
+</head>
+
+<body>
+
+<div id="map" class="mapboxgl-map"><div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate"><canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" width="734" height="934" style="position: absolute; width: 734px; height: 934px;"></canvas></div><div class="mapboxgl-control-container"><div class="mapboxgl-ctrl-top-left"></div><div class="mapboxgl-ctrl-top-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-group"><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom In"></button><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom Out"></button><button class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass" type="button" aria-label="Reset North"><span class="mapboxgl-ctrl-compass-arrow" style="transform: rotate(0deg);"></span></button></div></div><div class="mapboxgl-ctrl-bottom-left"><div class="mapboxgl-ctrl" style="display: none;"><a class="mapboxgl-ctrl-logo" target="_blank" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div></div><div class="mapboxgl-ctrl-bottom-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-attrib"><a href="https://osmbuildings.org/copyright">© OSM Buildings</a> <a href="https://www.openstreetmap.org/about/">© OpenStreetMap contributors</a></div></div></div></div>
+<div id="left"></div>
+<div id="right"></div>
+<div id="top"></div>
+<div id="bottom"></div>
+<a href="#" class="info" id='help'>i</a>
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h2><b>3D Map Information</b></h2>
+    </div>
+    <div class="modal-body">
+      <p>This web application shows 3D imagery of worldwide building data created by Mapbox GL and OpenStreetMap services. <b>***</b>Note that visibility of buildings is limited to an extent and the web page may need to be refreshed for buffering data.<b>***</b></p>
+	  <p>For more information about OSM services visit their designated <a href="http://osmbuildings.org/services/" target="_blank"> website</a>.</p>
+      <p style="font-size:150%;">To go back to my home page <a href="https://lresh1993.github.io/">Click Here</a>.</p>
+    </div>
+   </div>
+   
+<script>
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'https://data.osmbuildings.org/0.2/rkc8ywdl/style.json',
+	center: [-76.6108,39.286],
+    zoom: 15,
+    bearing: 0,
+    pitch: 45,
+    attributionControl: true,
+    hash: true
+  });
+  
+  map.addControl(new mapboxgl.NavigationControl());
+  
+  
+ 	
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("help");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}	 
+  
+  
+ 
+</script>
+
+</body></html>
